@@ -18,16 +18,15 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2012, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		librdmacm
-COMPONENT_VERSION=	1.0.14.1
+COMPONENT_VERSION=	1.0.15
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:b74d367415b4f294f3821955428f3e362b91f779042c88970f99941216c13a7c
+COMPONENT_ARCHIVE_HASH=	sha256:b4a2a0a4f70c22611ca35aa8b9699420872803cba5af28ae3ca57dd90b60c6c6
 COMPONENT_ARCHIVE_URL=	http://www.openfabrics.org/downloads/rdmacm/$(COMPONENT_ARCHIVE)
 
 include $(WS_TOP)/make-rules/prep.mk

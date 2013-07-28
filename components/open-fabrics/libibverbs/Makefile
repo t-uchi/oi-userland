@@ -1,4 +1,4 @@
-
+#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -18,35 +18,28 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2013, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libibverbs
 COMPONENT_VERSION=	1.1.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-1.22.g7257cd3.tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:1e04aa9d518e3dc372fdda6bd25bf072caae4c85c38d0ae095a614104aa583d4
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-1.24.gb89d4d7.tar.gz
+COMPONENT_ARCHIVE_HASH=	sha256:cb91baffc5bab7a06e6f6f0eee4d7fc6145cbcc40cafd0b3f495354d9bec356c
 COMPONENT_ARCHIVE_URL=	http://www.openfabrics.org/downloads/libibverbs/$(COMPONENT_ARCHIVE)
 
 include $(WS_TOP)/make-rules/prep.mk
 include $(WS_TOP)/make-rules/configure.mk
 include ../ofed.mk
 
-MAN3FILES =	ibv_alloc_shpd.3 \
-		ibv_reg_mr_relaxed.3 \
-		ibv_share_pd.3 \
-		ibv_gid_reachable.3 \
-		ibv_register_sm_events.3
-
-include $(WS_TOP)/make-rules/shared-targets.mk
-
 # add flags to get at extra bits from other components' source trees
+CPPFLAGS +=	-I$(PWD)/../libmthca/libmthca-1.0.5/src
 CPPFLAGS +=	-I$(PWD)/../libmlx4/libmlx4-1.0.1/src
-CPPFLAGS +=	-I$(PWD)/../librdmacm/librdmacm-1.0.14.1/include
+CPPFLAGS +=	-I$(PWD)/../librdmacm/librdmacm-1.0.15/include
 
-LIBS +=	-lsocket -lnsl -lkstat
+# include devinfo for sysfs emulation
+LIBS +=	-lsocket -lnsl -ldevinfo -lkstat
 
 # --disable-libcheck is not a supported option for this component
 DISABLE_LIBCHECK=
@@ -54,6 +47,7 @@ DISABLE_LIBCHECK=
 COMPONENT_PREP_ACTION = \
 	cp ofa_solaris.h $(@D)/include/infiniband ; \
 	cp solaris_compatibility.c $(@D)/src ; \
+	cd ../libmthca; gmake prep; \
 	cd ../libmlx4; gmake prep; \
 	cd ../librdmacm; gmake prep
 
@@ -79,7 +73,7 @@ COMPONENT_POST_INSTALL_ACTION = \
 # common targets
 build:		$(BUILD_32_and_64)
 
-install:	$(INSTALL_32_and_64) $(PROTOMAN3FILES)
+install:	$(INSTALL_32_and_64)
 
 BUILD_PKG_DEPENDENCIES =	$(BUILD_TOOLS)
 

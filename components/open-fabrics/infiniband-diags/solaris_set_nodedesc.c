@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2012, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2011, Oracle and/or its affiliates. All rights reserved.
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -55,6 +55,7 @@
 #include <infiniband/verbs.h>
 #include <infiniband/arch.h>
 
+#include <sys/ib/adapters/tavor/tavor_ioctl.h>
 #include <sys/ib/adapters/hermon/hermon_ioctl.h>
 
 /*
@@ -73,16 +74,30 @@
 #define	HERMON_IOCTL_GET_NODEDESC	(('t' << 8) | 0x31)
 #endif
 
+#ifdef	TAVOR_NODEDESC_UPDATE_STR
+#define	TAVOR_NODEDESC_UPDATE_STRING		0x00000001
+#endif
+#ifndef	TAVOR_NODEDESC_UPDATE_HCA_STRING
+#define	TAVOR_NODEDESC_UPDATE_HCA_STRING	0x00000002
+#undef	TAVOR_NODEDESC_UPDATE_HCA_MAP
+#endif
+#ifndef TAVOR_IOCTL_GET_NODEDESC
+#define	TAVOR_IOCTL_GET_NODEDESC	(('t' << 8) | 0x31)
+#endif
+
 #define	NODEDESC_UPDATE_STRING		0x00000001
 #define	NODEDESC_UPDATE_HCA_STRING	0x00000002
 #define	NODEDESC_READ			0x80000000
+
+// p_slot is a define macro and it conflists with a p_slot variable in umad.h
+#undef p_slot
 
 #include "ibdiag_common.h"
 
 static char *devpath_prefix = "/devices";
 static char *devpath_suffix = ":devctl";
 static char *ib_hca_driver_list[] = {
-	"hermon", NULL
+	"tavor", "hermon", NULL
 };
 static di_node_t	di_rootnode;
 char *argv0 = "solaris_set_nodedesc";
@@ -163,6 +178,7 @@ add_read_info_arr(char *nd_str, uint64_t guid)
 static void
 do_driver_read_ioctl(char *drivername)
 {
+#if 0
 	di_node_t	hcanode, childnode;
 	char		*devpath;
 	char		*access_devname;
@@ -203,7 +219,20 @@ do_driver_read_ioctl(char *drivername)
 			hcanode = di_drv_next_node(hcanode);
 			continue;
 		}
-		if (strcmp(drivername, "hermon") == 0) {
+		if (strcmp(drivername, "tavor") == 0) {
+			tavor_nodedesc_ioctl_t		nodedesc_ioctl;
+
+			if ((rc = ioctl(devfd, TAVOR_IOCTL_GET_NODEDESC,
+			    (void *)&nodedesc_ioctl)) != 0) {
+				IBERROR("tavor ioctl failure");
+				free(access_devname);
+				close(devfd);
+				hcanode = di_drv_next_node(hcanode);
+				continue;
+			}
+			add_read_info_arr((char *)nodedesc_ioctl.node_desc_str,
+			    *hca_guid);
+		} else if (strcmp(drivername, "hermon") == 0) {
 			hermon_nodedesc_ioctl_t		nodedesc_ioctl;
 
 			if ((rc = ioctl(devfd, HERMON_IOCTL_GET_NODEDESC,
@@ -216,21 +245,20 @@ do_driver_read_ioctl(char *drivername)
 			}
 			add_read_info_arr((char *)nodedesc_ioctl.node_desc_str,
 			    *hca_guid);
-		} else {
-			IBERROR("drivername != hermon: %s", drivername);
 		}
 
 		free(access_devname);
 		close(devfd);
 		hcanode = di_drv_next_node(hcanode);
 	}
-
+#endif
 }
 
 static int
 do_driver_update_ioctl(char *drivername, char *node_desc, char *hca_desc,
     uint64_t inp_hca_guid, uint32_t update_flag)
 {
+#if 0
 	di_node_t	hcanode, childnode;
 	char		*devpath;
 	char		*access_devname;
@@ -277,7 +305,25 @@ do_driver_update_ioctl(char *drivername, char *node_desc, char *hca_desc,
 		free(access_devname);
 		return (rc);
 	}
-	if (strcmp(drivername, "hermon") == 0) {
+	if (strcmp(drivername, "tavor") == 0) {
+		tavor_nodedesc_ioctl_t		nodedesc_ioctl;
+
+		strncpy(nodedesc_ioctl.node_desc_str, desc_str, 64);
+		if (update_flag & NODEDESC_UPDATE_STRING)
+			nodedesc_ioctl.node_desc_update_flag =
+			    TAVOR_NODEDESC_UPDATE_STRING;
+		else if (update_flag & NODEDESC_UPDATE_HCA_STRING)
+			nodedesc_ioctl.node_desc_update_flag =
+			    TAVOR_NODEDESC_UPDATE_HCA_STRING;
+		else {
+			IBERROR("Invalid option");
+			exit(-1);
+		}
+		if ((rc = ioctl(devfd, TAVOR_IOCTL_SET_NODEDESC,
+		    (void *)&nodedesc_ioctl)) != 0) {
+			IBERROR("tavor ioctl failure");
+		}
+	} else if (strcmp(drivername, "hermon") == 0) {
 		hermon_nodedesc_ioctl_t		nodedesc_ioctl;
 
 		strncpy(nodedesc_ioctl.node_desc_str, desc_str, 64);
@@ -295,13 +341,14 @@ do_driver_update_ioctl(char *drivername, char *node_desc, char *hca_desc,
 		    (void *)&nodedesc_ioctl)) != 0) {
 			IBERROR("hermon ioctl failure");
 		}
-	} else {
-		IBERROR("drivername != hermon: %s", drivername);
 	}
 
 	free(access_devname);
 	close(devfd);
 	return (rc);
+#else
+	return (-1);
+#endif
 }
 
 static void
@@ -435,8 +482,7 @@ main(int argc, char **argv)
 	struct utsname	uts_name;
 	uint64_t	hca_guid;
 	boolean_t	guid_inited = B_FALSE;
-	extern int 	ibdebug;
-	char		nodename[64];
+	extern int ibdebug;
 
 	static char const str_opts[] = "N:H:G:vd";
 	static const struct option long_opts[] = {
@@ -540,23 +586,10 @@ main(int argc, char **argv)
 			rc = -1;
 			goto free_and_ret;
 		}
-
-		/*
-		 * The common nodedesc string can have max 64 chars.
-		 * We can accomodate 63 chars from uname and alike
-		 * option -N, we append a space to the nodename.
-		 */
-		(void) strncpy(nodename, uts_name.nodename, 63);
-		if (nodename[strlen(nodename)] != ' ')
-			(void) strncat(nodename, " ", 1);
-
-		rc = update_nodedesc(nodename, NULL, 0,
-		    NODEDESC_UPDATE_STRING);
-		if (rc) {
-			IBERROR("write common node descriptor failed");
-			rc = -1;
-		}
 	}
+
+	rc = update_nodedesc((char *)uts_name.nodename, NULL,
+	    0, NODEDESC_UPDATE_STRING);
 
 free_and_ret:
 	if (nodedesc)

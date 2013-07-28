@@ -18,16 +18,15 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2012, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		perftest
 COMPONENT_VERSION=	1.3.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-0.42.gf350d3d.tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:164d32753ab87ba3152c84f69bf16bb592d77b922e66e753bd9ad0e229675793
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-0.58.g8f82435.tar.gz
+COMPONENT_ARCHIVE_HASH=	sha256:26b68938036265507e4ea9a4c56b5ca9686b009628de4b96124c7f7aec4d93e2
 COMPONENT_ARCHIVE_URL=	http://www.openfabrics.org/downloads/perftest/$(COMPONENT_ARCHIVE)
 
 $(BUILD_32):	BITS=32
@@ -39,11 +38,7 @@ include $(WS_TOP)/make-rules/prep.mk
 include $(WS_TOP)/make-rules/configure.mk
 include ../ofed.mk
 
-MAN1FILES =	ib_clock_test.1 \
-		ib_write_bw.1 \
-		ib_read_bw.1 \
-		ib_send_bw.1 \
-		rdma_bw.1
+MAN1FILES =	ib_clock_test.1
 
 include $(WS_TOP)/make-rules/shared-targets.mk
 

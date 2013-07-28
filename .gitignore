@@ -9,3 +9,7 @@ tools/parfait
 tools/pkglint
 
 components/meta-packages/history/build
+
+*gz
+*bz
+*xz

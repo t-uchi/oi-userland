@@ -18,16 +18,15 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2012, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libibmad
-COMPONENT_VERSION=	1.3.7
+COMPONENT_VERSION=	1.3.8
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:825a1ff5c2df0a6a158e0058560772998d39ae633a838c19b58a99650dc199b0
+COMPONENT_ARCHIVE_HASH=	sha256:f442cb79323a515618744acd7b2a37691f79411ed57bc8523716d27fd3f2bc4a
 COMPONENT_ARCHIVE_URL=	http://www.openfabrics.org/downloads/management/$(COMPONENT_ARCHIVE)
 
 include $(WS_TOP)/make-rules/prep.mk

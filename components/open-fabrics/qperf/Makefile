@@ -18,16 +18,15 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2012, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qperf
-COMPONENT_VERSION=	0.4.6
+COMPONENT_VERSION=	0.4.9
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-0.1.gb81434e.tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:304b89d1b006c959cad3b132346a6d061526fe626953ef99c764df396e43f959
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_ARCHIVE_HASH=	sha256:2300e75edffe95d4dfbe576eb5c2f0d0da3142b5e4a96fcd01b535d50a48f07c
 COMPONENT_ARCHIVE_URL=	http://www.openfabrics.org/downloads/qperf/$(COMPONENT_ARCHIVE)
 
 include $(WS_TOP)/make-rules/prep.mk

@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2013, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2011, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../make-rules/shared-macros.mk
 include ../../make-rules/ips.mk
@@ -26,19 +26,11 @@ include ofed.mk
 
 LD_Z_IGNORE =
 
-COMPONENT_NAME=	open-fabrics
-COMPONENT_VERSION=1.5.3
-
-COMPONENT_PROJECT_URL=	http://www.openfabrics.org/
-COMPONENT_BUGDB=	library/ofuv_lib utility/ofuv_tools
+COMPONENT_VERSION=1.5.4.1
+COMPONENT_ARCHIVE_URL=http://www.openfabrics/org/downloads/OFED/ofed-1.5.4/OFED-1.5.4.1.tgz
 
 # for now, everything with a Makefile should be built
 SUBDIRS =	$(shell echo */Makefile | sed -e 's;/Makefile;;g')
-
-# Do not apply the standard license transforms for this component. The
-# license actions in the open-fabrics.p5m file are already tagged with the
-# attributes.
-LICENSE_TRANSFORMS =
 
 .PHONY:	$(SUBDIRS)
 
@@ -66,6 +58,7 @@ $(SUBDIRS):	FORCE
 # declare module dependencies
 librdmacm:		libibverbs
 libmlx4:		libibverbs
+libmthca:		libibverbs
 rds-tools:		libibverbs
 perftest:		libibverbs librdmacm libibverbs
 qperf:			libibverbs librdmacm

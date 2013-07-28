@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2012, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -26,21 +26,17 @@ COMPONENT_NAME=		rds-tools
 COMPONENT_VERSION=	2.0.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:31b5924f73bed59e513470586c69ebe92eeb708fcc61a0519045fcf7954233a3
+COMPONENT_ARCHIVE_HASH=	sha256:31b5924f73bed59e513470586c69ebe92eeb708fcc61a0519045fcf7954233a3
 COMPONENT_ARCHIVE_URL=	http://www.openfabrics.org/downloads/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 
 include $(WS_TOP)/make-rules/prep.mk
 include $(WS_TOP)/make-rules/configure.mk
 include ../ofed.mk
 
-CPPFLAGS +=	-I$(PROTO_DIR)/usr/include
 CFLAGS +=	-O2 -Wall -D_XOPEN_SOURCE=500 -D__EXTENSIONS__ $(CPPFLAGS)
+CFLAGS += -I$(PROTO_DIR)/usr/include
 
-LIBS +=	-lsocket -lnsl -llgrp -lkstat -libverbs
-
-COMPONENT_PREP_ACTION = \
-	cp rds-vendor.c $(@D)/
+LIBS +=	-lsocket -lnsl -llgrp -lkstat
 
 CLEANUP_DIRS =	$(PROTOUSRBINDIR)/net
 
