@@ -13,3 +13,4 @@ components/meta-packages/history/build
 *gz
 *bz
 *xz
+.gitignore

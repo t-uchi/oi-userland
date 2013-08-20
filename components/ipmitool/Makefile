@@ -30,8 +30,9 @@ COMPONENT_VERSION=	1.8.10
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	http://ipmitool.sourceforge.net
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:13a0e40faf266e0eea6e4cb8136a00ce67ea85d18392e6384be17898d76cbd12
-COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/ipmitool/ipmitool/1.8.10/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_HASH=	\
+    sha256:13a0e40faf266e0eea6e4cb8136a00ce67ea85d18392e6384be17898d76cbd12
+COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/ipmitool/ipmitool/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 
 include ../../make-rules/prep.mk
 include ../../make-rules/configure.mk
@@ -49,13 +50,13 @@ CONFIGURE_OPTIONS  +=		CFLAGS="$(CFLAGS)"
 
 
 # common targets
-build:		$(BUILD_32)
+build:		$(BUILD_32_and_64)
 
-install:	$(INSTALL_32)
+install:	$(INSTALL_32_and_64)
 
 # run test_ipmitool && test_ipmievd as root vs self
 # on test vs build machine in tmp vs workspace dir
-test:		$(NO_TESTS)
+test:		$(TESTS_32_and_64)
 
 BUILD_PKG_DEPENDENCIES =	$(BUILD_TOOLS)
 
